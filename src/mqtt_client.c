@@ -15,6 +15,7 @@
 
 char *topic_pfx;
 int qos_lvl;
+bool retain;
 MQTTClient client;
 MQTTClient_connectOptions options;
 MQTTClient_SSLOptions ssl_options;
@@ -23,11 +24,12 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level)
+bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level, bool retain_flag)
 {
     int status;
     topic_pfx = topic_prefix;
     qos_lvl = qos_level;
+    retain = retain_flag;
 
     options = (MQTTClient_connectOptions)MQTTClient_connectOptions_initializer;
     options.keepAliveInterval = MQTT_KEEP_ALIVE_INTERVAL;
@@ -132,7 +134,7 @@ bool mqtt_send(char *topic, char *payload)
     msg.payload = payload;
     msg.payloadlen = strlen(payload);
     msg.qos = qos_lvl;
-    msg.retained = false;
+    msg.retained = retain;
 
     int status = MQTTClient_publishMessage(client, topic_with_pfx, &msg, NULL);
     if (status != MQTTCLIENT_SUCCESS)

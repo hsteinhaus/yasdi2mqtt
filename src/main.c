@@ -25,9 +25,14 @@ int main(int argc, char **argv)
     char *mqtt_password = getenv("MQTT_PASSWORD");
 
     int mqtt_qos_level = 2;
+    bool mqtt_retain_flag = false;
     if (getenv("MQTT_QOS_LEVEL"))
     {
         mqtt_qos_level = strtol(getenv("MQTT_QOS_LEVEL"), NULL, 10);
+    }
+    if (getenv("MQTT_RETAIN"))
+    {
+        mqtt_retain_flag = strtol(getenv("MQTT_RETAIN"), NULL, 10);
     }
 
     if (getenv("LOG_LEVEL"))
@@ -44,10 +49,11 @@ int main(int argc, char **argv)
     log_info("Configuration | MQTT_PORT = %u", mqtt_port);
     log_info("Configuration | MQTT_SSL_CERT = %s", mqtt_ssl_cert);
     log_info("Configuration | MQTT_QOS_LEVEL = %d", mqtt_qos_level);
+    log_info("Configuration | MQTT_RETAIN_FLAG = %d", mqtt_retain_flag);
     log_info("Configuration | MQTT_USER = %s", mqtt_user);
     log_info("Configuration | MQTT_PASSWORD = %s", mqtt_password);
 
-    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level))
+    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level, mqtt_retain_flag))
     {
         log_fatal("Unable to initialize mqtt_client");
         return -1;
